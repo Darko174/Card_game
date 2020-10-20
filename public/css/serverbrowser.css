@@ -1,0 +1,19 @@
+.container{
+    width: 90%;
+    height: 90vh;
+    padding: 5%;
+}
+.browserWindow{
+    width: 100%;
+    height: 100%;
+    background-color: skyblue;
+    border-radius: 5px;
+    padding: 5px;
+}
+.game{
+    background-color: #fff;
+    width: 95%;
+    height: 10%;
+    padding: 5px;
+    margin-bottom: 20px;
+}

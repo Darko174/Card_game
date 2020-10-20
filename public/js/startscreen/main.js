@@ -16,3 +16,5 @@ submitNickname.addEventListener("click", () => {
         userName = inputNickname.value.trim();
     }
 })
+
+
