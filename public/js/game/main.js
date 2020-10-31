@@ -26,11 +26,15 @@ class Game {
         }
     }
     createCard(cardInfo) {
-        const card = document.createElement("div");
-        [ card.number, card.letter, card.t, card.imgUrl] = [ cardInfo.number, cardInfo.letter, cardInfo.text, cardInfo.imgUrl ];
-        card.classList.add("card");
-        card.style.backgroundImage = `url(${card.imgUrl})`;
-        return card
+        if(cardInfo) {
+            const card = document.createElement("div");
+            [ card.number, card.letter, card.t, card.imgUrl] = [ cardInfo.number, cardInfo.letter, cardInfo.text, cardInfo.imgUrl ];
+            card.classList.add("card");
+            card.style.backgroundImage = `url(${card.imgUrl})`;
+            return card
+        } else {
+            return
+        }
     }
     renderCards(cards, target) {
         cards.forEach( c => target.append(this.createCard(c))); 

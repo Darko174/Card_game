@@ -1,9 +1,17 @@
-.card{
+.card, .enemyCard, .cardInDeck{
     width: 95.5px;
     height: 100%;
     border-radius: 5px;
-    margin-left: 1px;
     transition: .5s;
-    background: transparent center / cover no-repeat;
     display: inline-block;
+}
+
+
+.card{
+    background: transparent center / cover no-repeat;
+    margin-left: 1px;
+}
+.enemyCard, .cardInDeck{
+    background: linear-gradient(180deg, #59B4C8 0%, #6B74CB 100%);
+    margin-right: 1px;
 }

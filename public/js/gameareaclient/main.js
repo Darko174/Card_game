@@ -5,7 +5,10 @@ const urlParams = new URLSearchParams(window.location.search);
 const roomId = urlParams.get('id');
 const username = localStorage.getItem("userName");
 const playerTwoCards = document.querySelector(".playerTwoCards"); 
+const playerOneCards = document.querySelector(".playerOneCards"); 
 const gameboard = document.querySelector(".gameboard");
+const deck = document.querySelector(".deck");
+
 
 socket.on("joingame", name => {
     container.insertAdjacentHTML("beforeend", `<p>${ name } joined game</p>`);
@@ -18,15 +21,53 @@ socket.emit("joingame", {
     clientName: username
 });
 socket.on("startgame", cards => {
-    const myCards = cards.secondPlayerCards;
-    //_ROOMID = cards.roomId;
-    Game.prototype.renderCards(myCards, playerTwoCards);
-    console.log(myCards);
+    startgame(cards);
 })
 socket.on("playerturn", card => {
+     playerturn(card);
+     socket.emit("")
+})
+socket.on("takecard", data => {
+    if(data == "aaa") {
+        renderHiddenCards(playerOneCards, 1);
+    } else {
+        takeCard(data);
+    }
+}) 
+function startgame(cards) {
+    const myCards = cards.secondPlayerCards;
+    renderHiddenCards(playerOneCards, 6);
+    renderHiddenCards(deck, 1);
+    Game.prototype.renderCards(myCards, playerTwoCards);
+}
+function playerturn(card) {
     gameboard.innerHTML = "";
     gameboard.append(Game.prototype.createCard(card));
-})
+    playerOneCards.querySelector(".enemyCard").remove();
+}
+function takeCard(data) {
+    if(data) {
+        const cardInDeck = document.querySelector(".cardInDeck");
+        if (typeof data == "object") {
+            playerTwoCards.append(Game.prototype.createCard(data.card));
+            data.deckIsOver ? cardInDeck.remove() : false;
+        } else {
+            cardInDeck.remove();
+        }
+    }
+}
+function renderHiddenCards(target, quantity) {
+    if(quantity > 1) {
+        for(let i = 0; i < quantity; i++) {
+            target.insertAdjacentHTML("beforeend", hiddenCard("enemyCard"));
+        }
+    } else {
+        target.insertAdjacentHTML("beforeend", hiddenCard("cardInDeck"));
+    } 
+}
+function hiddenCard(prop) {
+    return `<div class=${prop}></div>`
+}
 
 document.addEventListener("click", e => {
     const target = e.target;
@@ -34,10 +75,13 @@ document.addEventListener("click", e => {
     if(target.closest(".card")) {
         if(!cardInTable || target.number == cardInTable.number || target.letter == cardInTable.letter) {
             gameboard.innerHTML = "";
-            //Надо пересмотреть истоию с id
+            //Надо пересмотреть историю с id
             socket.emit("playerturn", {card : target, roomId : roomId});
             gameboard.appendChild(target);
         }
+    }
+    if(target.closest(".cardInDeck")) {
+        socket.emit("takecard", roomId);
     }
 })
 
