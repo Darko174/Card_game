@@ -23,24 +23,37 @@ socket.emit("joingame", {
 socket.on("startgame", cards => {
     startgame(cards);
 })
-socket.on("playerturn", card => {
-     playerturn(card);
-     socket.emit("")
+socket.on("enemyturn", card => {
+    enemyturn(card);
+
+    createNotification("Ваш ход");
+    document.addEventListener("click", event);
 })
 socket.on("takecard", data => {
     if(data == "aaa") {
         renderEnemyCards(1);
+
+        createNotification("Ваш ход");
+        document.addEventListener("click", event);
     } else {
         takeCard(data);
     }
 }) 
+//Создание оповещения о подключении игрока
+function createNotification(data){
+    const notification = document.createElement("div");
+    notification.classList.add("notification");
+    notification.innerHTML = data;
+    container.append(notification);
+    setTimeout(() => notification.remove(), 1000);
+}
 function startgame(cards) {
     const myCards = cards.secondPlayerCards;
     renderEnemyCards(6);
     renderDeck();
     Game.prototype.renderCards(myCards, playerTwoCards);
 }
-function playerturn(card) {
+function enemyturn(card) {
     gameboard.innerHTML = "";
     gameboard.append(Game.prototype.createCard(card));
     playerOneCards.querySelector(".enemyCard").remove();
@@ -67,21 +80,26 @@ function hiddenCard(prop) {
     return `<div class=${prop}></div>`
 }
 
-document.addEventListener("click", e => {
+function event(e) {
     const target = e.target;
     const cardInTable = gameboard.querySelector(".card");
     if(target.closest(".card")) {
         if(!cardInTable || target.number == cardInTable.number || target.letter == cardInTable.letter) {
             gameboard.innerHTML = "";
-            //Надо пересмотреть историю с id
-            socket.emit("playerturn", {card : target, roomId : roomId});
             gameboard.appendChild(target);
+            socket.emit("enemyturn", {card : target, roomId : roomId});
+
+            document.removeEventListener("click", event);
+            createNotification("Ход соперника");
         }
     }
     if(target.closest(".cardInDeck")) {
         socket.emit("takecard", roomId);
+
+        document.removeEventListener("click", event);
+        createNotification("Ход соперника");
     }
-})
+}
 
 
 

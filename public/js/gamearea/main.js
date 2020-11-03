@@ -11,17 +11,27 @@ let _ROOMID = "";
 socket.emit("newgame", username);
 
 socket.on("joingame", clientName => {
-    createNotification(container, clientName);
+    createNotification(`<p>${ clientName } вошел в игру</p>`);
 })
 socket.on("startgame", cards => {
     startGame(cards);
+
+    //Хост первым начинает игру
+    createNotification("Ваш ход");
+    document.addEventListener("click", event);
 })
-socket.on("playerturn", card => {
-    playerturn(card);
+socket.on("enemyturn", card => {
+    enemyturn(card);
+
+    createNotification("Ваш ход");
+    document.addEventListener("click", event);
 })
 socket.on("takecard", data => {     ///
     if(data == "aaa") {
         renderEnemyCards(1);
+
+        createNotification("Ваш ход");
+        document.addEventListener("click", event);
     } else {
         takeCard(data);
     }
@@ -38,12 +48,12 @@ function startGame(cards) {
 }
 
 //Создание оповещения о подключении игрока
-function createNotification(target, data){
+function createNotification(data){
     const notification = document.createElement("div");
     notification.classList.add("notification");
-    notification.innerHTML = `<p>${ data } вошел в игру</p>`;
-    target.append(notification);
-    setTimeout(() => notification.remove(), 1500);
+    notification.innerHTML = data;
+    container.append(notification);
+    setTimeout(() => notification.remove(), 1000);
 }
 //Рендерим скрытые карты соперника и колоду
 function renderEnemyCards(quantity) {
@@ -67,24 +77,28 @@ function takeCard(data) {
         }
     }
 }
-function playerturn(card) {
+function enemyturn(card) {
     gameboard.innerHTML = "";
     gameboard.append(Game.prototype.createCard(card));
     playerOneCards.querySelector(".enemyCard").remove();
 }
-
-
-document.addEventListener("click", e => {
+function event(e) {
     const target = e.target;
     const cardInTable = gameboard.querySelector(".card");
     if(target.closest(".card")) {
         if(!cardInTable || target.number == cardInTable.number || target.letter == cardInTable.letter) {
             gameboard.innerHTML = "";
             gameboard.appendChild(target);
-            socket.emit("playerturn", {card : target, roomId : _ROOMID});
+            socket.emit("enemyturn", {card : target, roomId : _ROOMID});
+
+            document.removeEventListener("click", event);
+            createNotification("Ход соперника");
         }
     }
     if(target.closest(".cardInDeck")) {
         socket.emit("takecard", _ROOMID);
+
+        document.removeEventListener("click", event);
+        createNotification("Ход соперника");
     }
-})
+}

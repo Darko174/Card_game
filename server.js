@@ -55,10 +55,10 @@ io.on("connection", socket => {
     socket.on("startgame", roomId => {
         startGame(roomId);
     })
-    socket.on("playerturn", data => {
+    socket.on("enemyturn", data => {
         const {card, roomId} = data;
         //Всем кроме отправителя
-        socket.to(roomId).emit("playerturn", card);
+        socket.to(roomId).emit("enemyturn", card);
     }) 
     socket.on("takecard", roomId => {
         takecard(roomId, socket);
