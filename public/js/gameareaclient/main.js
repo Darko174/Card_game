@@ -29,15 +29,15 @@ socket.on("playerturn", card => {
 })
 socket.on("takecard", data => {
     if(data == "aaa") {
-        renderHiddenCards(playerOneCards, 1);
+        renderEnemyCards(1);
     } else {
         takeCard(data);
     }
 }) 
 function startgame(cards) {
     const myCards = cards.secondPlayerCards;
-    renderHiddenCards(playerOneCards, 6);
-    renderHiddenCards(deck, 1);
+    renderEnemyCards(6);
+    renderDeck();
     Game.prototype.renderCards(myCards, playerTwoCards);
 }
 function playerturn(card) {
@@ -56,14 +56,12 @@ function takeCard(data) {
         }
     }
 }
-function renderHiddenCards(target, quantity) {
-    if(quantity > 1) {
-        for(let i = 0; i < quantity; i++) {
-            target.insertAdjacentHTML("beforeend", hiddenCard("enemyCard"));
-        }
-    } else {
-        target.insertAdjacentHTML("beforeend", hiddenCard("cardInDeck"));
-    } 
+function renderEnemyCards(quantity) {
+    for(let i = 0; i < quantity; i++) 
+        playerOneCards.insertAdjacentHTML("beforeend", hiddenCard("enemyCard"));
+}
+function renderDeck() {
+    deck.insertAdjacentHTML("beforeend", hiddenCard("cardInDeck"));
 }
 function hiddenCard(prop) {
     return `<div class=${prop}></div>`

@@ -73,7 +73,8 @@ function createRoom(hostname, room, id) {
         host: {
             name: hostname,
             id: id,
-            cards: []
+            cards: [],
+            active : true
         },
         cardsDeck: new Game(deck)
     }
@@ -89,7 +90,8 @@ function joinGame(clientInfo, socket) {
             rooms[room].client = {
                 name: clientName,
                 id: socket.id,
-                cards: []
+                cards: [],
+                active : false
             }
         } else {
             return
